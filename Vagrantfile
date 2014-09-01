@@ -9,7 +9,6 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ".", "/home/vagrant/ecmd"
     config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet/manifests"
-      puppet.module_path = "puppet/modules"
       puppet.manifest_file = "ecmd.pp"
     end
   end
