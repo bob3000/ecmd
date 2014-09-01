@@ -1,0 +1,13 @@
+# ecmd completion                                           -*- shell-script -*-
+
+_ecmd() {
+    local cur prev words cword split
+    _init_completion || return
+
+    if [[ $cword -eq 1 ]]; then
+        COMPREPLY=( $( compgen -W 'info' -- "$cur" ) )
+        return 0
+    fi
+} && complete -F _ecmd ecmd
+
+# ex: ts=4 sw=4 et filetype=sh

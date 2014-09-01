@@ -1,0 +1,12 @@
+.coverage
+.ropeproject
+.vagrant
+*.swp
+htmlcov/
+__pycache__
+*.pyc
+*.egg-info
+test_config/
+man/ecmd.1.gz
+build/
+dist/
