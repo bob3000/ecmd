@@ -4,7 +4,7 @@ import ecmd.resources
 
 class Controller:
 
-    def __init__(self):
+    def __init__(self, username, password):
         def _load(self, res_type):
             try:
                 res = self.api.call("/{}s/list".format(res_type))
@@ -17,11 +17,11 @@ class Controller:
         self.servers = self._load("server")
         self.drives = self._load("drive")
 
-    def info(self):
+    def drives(self):
         mapping = {}
         for drive in self.drives:
             for server in drive.claimed:
                 if server not in mapping:
                     mapping.update({server: []})
                 mapping[server].append(drive)
-        return mapping
+        return sorted({k: sorted(v) for k, v in mapping})
