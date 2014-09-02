@@ -1,10 +1,7 @@
-import gzip
+import base64
 import json
 import urllib.error
 import urllib.request
-
-
-BASE_URL = ""
 
 
 class Auth():
@@ -14,7 +11,9 @@ class Auth():
         self.password = password
 
     def authorize_request(self, req):
-        # TODO: authorize
+        credentials = "{}:{}".format(self.username, self.password)
+        auth = "Basic {}".format(base64.b64encode(credentials.encode()).decode())
+        req.add_header("Authorization", auth)
         return req
 
 
@@ -25,12 +24,13 @@ class Api():
         "Accept": "application/json",
     }
 
-    def __init__(self, auth):
+    def __init__(self, auth, base_url):
         self.auth = auth
+        self.base_url = base_url
 
     def call(self, url):
-        url = "/".join([BASE_URL, url])
-        req = urllib.request.Request(url)
+        url = "/".join([self.base_url, url.strip("/")])
+        req = urllib.request.Request(url, headers=self.default_headers)
         req = self.auth.authorize_request(req)
         try:
             res = urllib.request.urlopen(req)
@@ -40,13 +40,11 @@ class Api():
 
     def _handle_response(self, res):
         headers = {k.lower(): v.lower() for k, v in res.getheaders()}
+        body = res.read().decode()
         if ('application/json' not in headers.get('content-type', "")):
             raise ApiException("content-type is not application/json")
         try:
-            try:
-                data = json.loads(gzip.decompress(res.read()).decode())
-            except OSError:  # response seems not to be gzipped
-                data = json.loads(res.read().decode())
+            data = json.loads(body)
         except (TypeError, ValueError):
             raise ApiException("payload is not valid json")
         return ApiResponse(data, res.getcode())

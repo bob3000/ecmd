@@ -6,8 +6,6 @@ setup(
     license="GNU GPL v3",
     packages=[
         "ecmd",
-        "ecmd.lib",
-        "ecmd.resources",
     ],
     test_suite="ecmd",
     install_requires={

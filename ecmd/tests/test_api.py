@@ -1,62 +1,70 @@
-import gzip
-import json
+import unittest
 import urllib.error
 import urllib.request
-import ecmd.lib.auth
+import ecmd.api
+from unittest.mock import MagicMock
 
 
-BASE_URL = ""
+class TestApi(unittest.TestCase):
+
+    def setUp(self):
+        self.request = urllib.request
+
+        self.http_response = MagicMock()
+        self.http_response.getheaders = \
+            lambda: [("content-type", "application/json")]
+        self.http_response.read = \
+            lambda: b'{"content": "my content"}'
+
+        attrs = {'urlopen.return_value': self.http_response}
+        urllib.request = MagicMock()
+        urllib.request.configure_mock(**attrs)
+
+        self.request_Request = urllib.request.Request
+        urllib.request.Request = MagicMock()
+
+        self.auth = MagicMock()
+        self.auth.authorize_request = lambda x: x
+
+    def test_call(self):
+        api = ecmd.api.Api(self.auth, "https://base/url")
+        api.call("/servers/list")
+        urllib.request.Request.assert_called_with(
+            "https://base/url/servers/list",
+            headers={'Content-Type': 'text/plain',
+                     'Accept': 'application/json'})
+
+    def test_wrong_content_type(self):
+        api = ecmd.api.Api(self.auth, "https://base/url")
+        self.http_response.getheaders = \
+            lambda: [("content-type", "text/html")]
+        with self.assertRaises(ecmd.api.ApiException):
+            api.call("/servers/list")
+
+    def test_wrong_payload(self):
+        api = ecmd.api.Api(self.auth, "https://base/url")
+        self.http_response.read = lambda: b'<html></html>'
+        with self.assertRaises(ecmd.api.ApiException):
+            api.call("/servers/list")
+
+    def test_http_error(self):
+        api = ecmd.api.Api(self.auth, "https://base/url")
+        attrs = {'urlopen.side_effect':
+                 urllib.error.HTTPError(None, None, None, None, None)}
+        urllib.request.configure_mock(**attrs)
+        with self.assertRaises(ecmd.api.ApiException):
+            api.call("/servers/list")
+
+    def tearDown(self):
+        urllib.request = self.request
+        urllib.request.Request = self.request_Request
 
 
-class Api():
-    def __init__(self, auth):
-        self.auth = auth
+class TestAuth(unittest.TestCase):
 
-    def call(self, url, params=None, post_data=None, headers=None):
-        params = params or {}
-        post_data = post_data or {}
-        headers = headers or {}
-        url = self._build_url(url, params)
-        if post_data:
-            req = urllib.request.Request(
-                url, headers=headers, data=post_data.encode(), method="POST")
-        else:
-            req = urllib.request.Request(url, headers=headers, method="GET")
-        try:
-            req = self.auth.authorize_request(req)
-            res = urllib.request.urlopen(req)
-        except (urllib.error.HTTPError, ecmd.lib.auth.AuthException) as e:
-            raise ApiException(e)
-        return self._handle_response(res)
-
-    def _build_url(self, url, params):
-        url = "/".join([BASE_URL, url.strip("/")])
-        if params:
-            params = sorted(["=".join(map(str, e)) for e in params.items()])
-            params = "&".join(params)
-            url = "?".join([url, params])
-        return url
-
-    def _handle_response(self, res):
-        headers = {k.lower(): v.lower() for k, v in res.getheaders()}
-        if ('application/json' not in headers.get('content-type', "")):
-            raise ApiException("content-type is not application/json")
-        try:
-            try:
-                data = json.loads(gzip.decompress(res.read()).decode())
-            except OSError:  # response seems not to be gzipped
-                data = json.loads(res.read().decode())
-        except (TypeError, ValueError):
-            raise ApiException("payload is not valid json")
-        return ApiResponse(data, res.getcode())
-
-
-class ApiResponse():
-
-    def __init__(self, payload, code):
-        self.payload = payload
-        self.code = code
-
-
-class ApiException(Exception):
-    pass
+    def test_authorize_request(self):
+        req = MagicMock()
+        auth = ecmd.api.Auth("username", "password")
+        auth.authorize_request(req)
+        req.add_header.assert_called_with('Authorization',
+                                          'Basic dXNlcm5hbWU6cGFzc3dvcmQ=')

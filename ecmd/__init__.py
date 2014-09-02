@@ -25,14 +25,14 @@ def load_tests(loader, tests, pattern):
             sys.stdout, sys.stderr = stdout, stderr
         print(result.strip())
 
-    globs = {}
-    globs.update({k: v for k, v in globals().items()})
-    globs.update({k: v for k, v in locals().items()})
-    pwd = os.path.dirname(__file__)
-    for fn in glob.glob("{}/tests/*.md".format(pwd)):
-        tests.addTests(doctest.DocFileSuite(
-            fn, module_relative=False, globs=globs,
-            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE))
+    #globs = {}
+    #globs.update({k: v for k, v in globals().items()})
+    #globs.update({k: v for k, v in locals().items()})
+    #pwd = os.path.dirname(__file__)
+    #for fn in glob.glob("{}/tests/*.md".format(pwd)):
+        #tests.addTests(doctest.DocFileSuite(
+            #fn, module_relative=False, globs=globs,
+            #optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE))
 
     return tests
 

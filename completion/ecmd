@@ -5,7 +5,7 @@ _ecmd() {
     _init_completion || return
 
     if [[ $cword -eq 1 ]]; then
-        COMPREPLY=( $( compgen -W 'info' -- "$cur" ) )
+        COMPREPLY=( $( compgen -W 'drives --version' -- "$cur" ) )
         return 0
     fi
 } && complete -F _ecmd ecmd

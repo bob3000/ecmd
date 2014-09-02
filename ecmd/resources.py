@@ -1,4 +1,5 @@
-import abc.ABC
+import abc
+import ecmd.api
 
 
 class Resource(abc.ABC):
@@ -12,15 +13,21 @@ class Resource(abc.ABC):
         """
         Attributes are fetched lazily
         """
-        if name not in locals():
-            try:
-                res = self.api.call("/{}s/info".format(self.res_type))
-                if "200" not in res.code:
-                    raise ResourceException("API returned {}".format(res.code))
-                self.__dict__.update(res.payload)
-            except ecmd.lib.api.ApiException as e:
-                raise ResourceException(str(e))
-        return locals()[name]
+        if name not in self.__dict__:
+            self.load()
+        return self.__dict__[name]
+
+    def load(self):
+        try:
+            res = self.api.call(
+                "/{}s/{}/info".format(self.res_type, self.uid))
+            if 200 != res.code:
+                raise ResourceException("API returned {}".format(res.code))
+            attributes = {k.replace(":", "_"): v
+                          for k, v in res.payload.items()}
+            self.__dict__.update(attributes)
+        except ecmd.api.ApiException as e:
+            raise ResourceException(str(e))
 
 
 class Drive(Resource):
