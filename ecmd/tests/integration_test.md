@@ -44,7 +44,7 @@ Next we need to fake a few environment variables.
     ...               'EHSECRET': 'secret',
     ...               'EHBASEURL': 'http://localhost:8000'}
 
-## obtaining general information
+## obtaining information about drives
 
 The `drive` command prints information about available servers the drives they
 are using.

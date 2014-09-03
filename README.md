@@ -10,7 +10,6 @@ program is only a **technical demonstration**.
 - [Getting started](#getting-started)
     - [Setup](#setup)
 - [Usage example](#usage-example)
-    - [Obtaining General Information](#obtaining-general-information)
 - [Documentation](#documentation)
     - [Command line help](#command-line-help)
     - [Manpage](#manpage)
