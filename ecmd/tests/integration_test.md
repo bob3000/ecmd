@@ -50,7 +50,7 @@ The `drive` command prints information about available servers the drives they
 are using.
 
     >>> sh("ecmd drives")
-    server1: drive
+    server1: drive drive
 
 There will be an error if the required environment variables are not properly
 set.

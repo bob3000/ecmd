@@ -16,8 +16,8 @@ setup(
         ],
     },
     data_files=[
-        ('/usr/share/man/man1', ['man/ecmd.1.gz']),
-        ('/usr/share/bash-completion/completions', ['completion/ecmd']),
+        #('/usr/share/man/man1', ['man/ecmd.1.gz']),
+        #('/usr/share/bash-completion/completions', ['completion/ecmd']),
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

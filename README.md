@@ -1,4 +1,4 @@
-# ecmd - An elastichosts Command Line Client
+# ecmd - elastichosts Command Line Client
 
 This an unofficial command line client for the
 [elastichosts](http://www.elastichosts.com) API. At the moment this
@@ -8,6 +8,7 @@ program is only a **technical demonstration**.
 
 - [Features](#features)
 - [Getting started](#getting-started)
+    - [Setup](#setup)
 - [Usage example](#usage-example)
     - [Obtaining General Information](#obtaining-general-information)
 - [Documentation](#documentation)
@@ -24,7 +25,7 @@ program is only a **technical demonstration**.
 
 ## Features
 
-- Obtain general information about running servers and belonging drives
+- Obtain information about drives and by which servers they are used
 
 ## Getting started
 
@@ -39,11 +40,25 @@ you can simply use this alias
 
 to run the program directly on your computer.
 
+### Setup
+
+Provide user credentials and API Base URL via environment variables.
+
+    export EHUUD=<your uudi>
+    export EHSECRET=<your secret>
+    export EHBASEURL=<API base url>
+
+**EHUUD** and **EHSECRET** can be found in your elastichosts profile in the
+Authentication tab.
+**EHBASEURL** corresponds to the hostname in the url shown in the browser
+while logged into the management console (e.g. https://lon-b.elastichosts.com)
+prefixed by `api-` (e.g. https://api-lon-b.elastichosts.com)
+
 ## Usage Example
 
 Print out information about servers and belonging drives.
 
-    ecmd info
+    ecmd drives
 
 ## Documentation
 

@@ -5,7 +5,7 @@ import ecmd.api
 from unittest.mock import MagicMock
 
 
-class TestApi(unittest.TestCase):
+class ApiTestCase(unittest.TestCase):
 
     def setUp(self):
         self.request = urllib.request
@@ -60,7 +60,7 @@ class TestApi(unittest.TestCase):
         urllib.request.Request = self.request_Request
 
 
-class TestAuth(unittest.TestCase):
+class AuthTestCase(unittest.TestCase):
 
     def test_authorize_request(self):
         req = MagicMock()

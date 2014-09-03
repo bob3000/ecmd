@@ -37,9 +37,13 @@ def main(argv=None):
         print("Error:", "the environment variables {} are not set"
               "".format(" ".join(credentials)), file=sys.stderr)
         sys.exit(1)
-    controller = ecmd.controller.Controller(os.environ.get("EHUUID"),
-                                            os.environ.get("EHSECRET"),
-                                            os.environ.get("EHBASEURL"))
+    try:
+        controller = ecmd.controller.Controller(os.environ.get("EHUUID"),
+                                                os.environ.get("EHSECRET"),
+                                                os.environ.get("EHBASEURL"))
+    except RuntimeError as e:
+        print("Error:", str(e), file=sys.stderr)
+        sys.exit(1)
     args = parse_args(argv)
     if 'func' in args:
             args.func(args)

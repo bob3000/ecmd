@@ -4,7 +4,7 @@ import ecmd.controller
 from unittest.mock import MagicMock
 
 
-class TestController(unittest.TestCase):
+class ControllerTestCase(unittest.TestCase):
 
     def setUp(self):
         self.real_api = ecmd.api.Api

@@ -4,7 +4,7 @@ import ecmd.resources
 from unittest.mock import MagicMock
 
 
-class TestResource(unittest.TestCase):
+class ResourceTestCase(unittest.TestCase):
 
     def setUp(self):
         self.api = MagicMock()
