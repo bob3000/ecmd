@@ -1,15 +1,19 @@
+import concurrent.futures
 import ecmd.api
 from collections import OrderedDict
 from ecmd.resources import Drive, Server
 
 
-class Controller:
+class Controller():
 
     def __init__(self, username, password, base_url):
         auth = ecmd.api.Auth(username=username, password=password)
         self.api = ecmd.api.Api(auth, base_url)
-        self.servers = self._fetch(Server)
-        self.drives = self._fetch(Drive)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            future_servers = executor.submit(self._fetch, Server)
+            future_drives = executor.submit(self._fetch, Drive)
+            self.servers = future_servers.result()
+            self.drives = future_drives.result()
 
     def _fetch(self, cls):
         try:
@@ -22,9 +26,15 @@ class Controller:
         except ecmd.api.ApiException as e:
             raise RuntimeError(e)
 
+    def _eager_load(self):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+            executor.map(lambda x: x.load(), self.servers)
+            executor.map(lambda x: x.load(), self.drives)
+
     def drive_server_mapping(self):
         mapping = {}
         drive_attrs = ("block", "ide", "ata", "scsi",)
+        self._eager_load()
         for server in self.servers:
             mapping[server.name] = []
             drive_uids = dict(filter(lambda x: x[0].startswith(drive_attrs),
