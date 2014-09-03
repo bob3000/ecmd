@@ -31,8 +31,8 @@ class TestController(unittest.TestCase):
         server1.configure_mock(**attrs_server1)
         server2.configure_mock(**attrs_server2)
         drive.configure_mock(**attrs_drive)
-        controller.servers = [server1, server2,]
-        controller.drives = [drive, drive,]
+        controller.servers = [server1, server2]
+        controller.drives = [drive, drive]
         mapping = controller.drive_server_mapping()
         self.assertDictEqual(mapping, dict([('server1', ['drive', 'drive']),
                                             ('server2', ['drive', 'drive'])]))
@@ -46,7 +46,6 @@ class TestController(unittest.TestCase):
         ecmd.api.Api = MagicMock(return_value=error)
         with self.assertRaises(RuntimeError):
             ecmd.controller.Controller("user", "pass", "base_url")
-
 
     def tearDown(self):
         ecmd.api.Api = self.real_api

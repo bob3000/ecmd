@@ -12,7 +12,8 @@ class Auth():
 
     def authorize_request(self, req):
         credentials = "{}:{}".format(self.username, self.password)
-        auth = "Basic {}".format(base64.b64encode(credentials.encode()).decode())
+        auth = "Basic {}".format(
+            base64.b64encode(credentials.encode()).decode())
         req.add_header("Authorization", auth)
         return req
 

@@ -52,6 +52,13 @@ are using.
     >>> sh("ecmd drives")
     server1: drive
 
+There will be an error if the required environment variables are not properly
+set.
+
+    >>> os.environ = {}
+    >>> sh("ecmd drives")
+    Error: the environment variables EHBASEURL EHSECRET EHUUID are not set
+
 ## tear down
 
     >>> os.environ = real_environ

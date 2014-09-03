@@ -13,7 +13,7 @@ def parse_args(command_line):
         version=pkg_resources.get_distribution("ecmd").version,
         help="display program version and exit")
     parser.add_argument("command",
-                        choices=["drives",], help="list drives")
+                        choices=["drives"], help="list drives")
     parser.set_defaults(func=commands)
     return parser.parse_args(command_line)
 

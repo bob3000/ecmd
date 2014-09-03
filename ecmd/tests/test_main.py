@@ -35,10 +35,10 @@ class MainTestCase(unittest.TestCase):
     @patch('sys.stdout')
     def test_commands(self, stdout):
         controller = MagicMock(**{'drive_server_mapping.return_value':
-                                      {"server": ["drive1", "drive2"]}})
+                                  {"server": ["drive1", "drive2"]}})
         ecmd.__main__.controller = controller
         ecmd.__main__.commands(namespace({'command': 'drives'}))
-        ecmd.__main__.controller= MagicMock(
+        ecmd.__main__.controller = MagicMock(
             **{'drive_server_mapping.side_effect': RuntimeError})
         sys.exit.mock_reset
         ecmd.__main__.commands(namespace({'command': 'drives'}))
