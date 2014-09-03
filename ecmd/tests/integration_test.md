@@ -2,16 +2,20 @@
 
 ## setup
 
+This is a little fake HTTP sever who just serves right answers to the requests.
+
     >>> import threading
     >>> import re
     >>> import http.server
     >>> class Handler(http.server.BaseHTTPRequestHandler):
+    ...     def log_message(self, format, *args):
+    ...         return
     ...     def do_GET(s):
     ...         s.send_response(200)
     ...         s.send_header("Content-type", "application/json")
     ...         s.end_headers()
     ...         if s.path.endswith("/list"):
-    ...             s.wfile.write(b'[{"uuid": "987-654-321"}, {"uuid": "123-456-789"}]')
+    ...             s.wfile.write(b'[{"uuid": "789"}, {"uuid": "123"}]')
     ...         elif re.search('servers/.*/info', s.path):
     ...             s.wfile.write(b'{"uid": "123", "name": "server1", "block:0": "789"}')
     ...         elif re.search('drives/.*/info', s.path):
@@ -23,6 +27,9 @@
     ...     def __init__(self):
     ...         threading.Thread.__init__(self)
     ...         self.httpd = http.server.HTTPServer(("", 8000), Handler)
+    ...     def stop(self):
+    ...         self.httpd.shutdown()
+    ...         self.httpd.socket.close()
     ...     def run(self):
     ...         self.httpd.serve_forever()
 
@@ -39,11 +46,14 @@ Next we need to fake a few environment variables.
 
 ## obtaining general information
 
-The `info` command prints general information about available servers and
-belonging drives.
+The `drive` command prints information about available servers the drives they
+are using.
 
     >>> sh("ecmd drives")
+    server1: drive
 
 ## tear down
 
     >>> os.environ = real_environ
+    >>> deamon.stop()
+    >>> deamon.join()
