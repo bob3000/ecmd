@@ -1,5 +1,8 @@
 # ecmd - elastichosts Command Line Client
 
+[![Build Status](https://travis-ci.org/bob3000/ecmd.svg?branch=master)](https://travis-ci.org/bob3000/ecmd)
+[![Coverage Status](https://coveralls.io/repos/bob3000/ecmd/badge.png?branch=master)](https://coveralls.io/r/bob3000/ecmd?branch=master)
+
 This an unofficial command line client for the
 [elastichosts](http://www.elastichosts.com) API. At the moment this
 program is only a **technical demonstration**.
