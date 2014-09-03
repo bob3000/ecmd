@@ -15,7 +15,7 @@ class Controller():
                 future_drives = executor.submit(self._fetch, Drive)
                 self.servers = future_servers.result()
                 self.drives = future_drives.result()
-            except ecmd.api.ApiException as e:
+            except ecmd.api.ApiException as e:  # pragma: nocover
                 raise RuntimeError(e)
 
     def _fetch(self, cls):
@@ -34,7 +34,7 @@ class Controller():
             try:
                 executor.map(lambda x: x.load(), self.servers)
                 executor.map(lambda x: x.load(), self.drives)
-            except ecmd.api.ApiException as e:
+            except ecmd.api.ApiException as e:  # pragma: nocover
                 raise RuntimeError(e)
 
     def drive_server_mapping(self):

@@ -53,6 +53,10 @@ class MainTestCase(unittest.TestCase):
         os.environ = MagicMock(return_value={"EHBASEURL": "http://url"})
         self.assertTrue(sys.exit.called)
         sys.exit.mock_reset
+        ecmd.controller.Controller = MagicMock(side_effect=RuntimeError)
+        ecmd.__main__.main()
+        self.assertTrue(sys.exit.called)
+        sys.exit.mock_reset
 
     def tearDown(self):
         ecmd.controller = self.real_controller
