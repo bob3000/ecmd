@@ -1,31 +1,49 @@
 # main integration test
 
-## preparation
+## setup
 
-The `urllib.request.urlopen` function needs to be patched in order to avoid
-sending real HTTP request against some API.
+    >>> import threading
+    >>> import re
+    >>> import http.server
+    >>> class Handler(http.server.BaseHTTPRequestHandler):
+    ...     def do_GET(s):
+    ...         s.send_response(200)
+    ...         s.send_header("Content-type", "application/json")
+    ...         s.end_headers()
+    ...         if s.path.endswith("/list"):
+    ...             s.wfile.write(b'[{"uuid": "987-654-321"}, {"uuid": "123-456-789"}]')
+    ...         elif re.search('servers/.*/info', s.path):
+    ...             s.wfile.write(b'{"uid": "123", "name": "server1", "block:0": "789"}')
+    ...         elif re.search('drives/.*/info', s.path):
+    ...             s.wfile.write(b'{"uid": "789", "name": "drive"}')
+    ...         else:
+    ...             s.wfile.write(b'')
 
-    >>> import urllib.request
-    >>> from unittest.mock import MagicMock
-    >>> urllib.request.urlopen = MagicMock()
+    >>> class Server(threading.Thread):
+    ...     def __init__(self):
+    ...         threading.Thread.__init__(self)
+    ...         self.httpd = http.server.HTTPServer(("", 8000), Handler)
+    ...     def run(self):
+    ...         self.httpd.serve_forever()
 
-The mock needs to return an object which offers all the used methods from the
-`http.client.HTTPResponse` class for the whole program to work.
+    >>> deamon = Server()
+    >>> deamon.start()
 
-    >>> import http.client
-    >>> fake_response_methods = {
-    ...     "getheaders.return_value": [("content-type", "application/json")],
-    ...     "read.return_value": b'{"title": "a title", "body": "msg body"}',
-    ...     "getcode.return_value": 200,
-    ...     }
+Next we need to fake a few environment variables.
 
-    >>> fake_response = MagicMock(spec_set=http.client.HTTPResponse)
-    >>> urllib.request.urlopen.return_value = fake_response
-    >>> fake_response.configure_mock(**fake_response_methods)
+    >>> import os
+    >>> real_environ = os.environ
+    >>> os.environ = {'EHUUID': '123',
+    ...               'EHSECRET': 'secret',
+    ...               'EHBASEURL': 'http://localhost:8000'}
 
 ## obtaining general information
 
 The `info` command prints general information about available servers and
 belonging drives.
 
-    >>> sh("ecmd info")
+    >>> sh("ecmd drives")
+
+## tear down
+
+    >>> os.environ = real_environ
